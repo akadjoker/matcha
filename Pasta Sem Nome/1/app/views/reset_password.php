@@ -1,0 +1,2 @@
+<?php
+// Vista {view}
