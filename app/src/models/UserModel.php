@@ -186,35 +186,41 @@ public function updateFullProfile($id, $data)
         $params = ['id' => $excludeId];
     
         // Género
-        if (!empty($filters['gender'])) {
+        if (!empty($filters['gender']))
+         {
             $sql .= " AND u.gender = :gender";
             $params['gender'] = $filters['gender'];
         }
     
         // Orientação sexual
-        if (!empty($filters['orientation'])) {
+        if (!empty($filters['orientation'])) 
+        {
             $sql .= " AND u.sexual_orientation = :orientation";
             $params['orientation'] = $filters['orientation'];
         }
     
         // Localização
-        if (!empty($filters['location'])) {
+        if (!empty($filters['location'])) 
+        {
             $sql .= " AND u.location ILIKE :location";
             $params['location'] = '%' . $filters['location'] . '%';
         }
     
         // Idade mínima/máxima
-        if (!empty($filters['min_age']) || !empty($filters['max_age'])) {
+        if (!empty($filters['min_age']) || !empty($filters['max_age']))
+         {
             $today = new DateTime();
             
-            if (!empty($filters['min_age'])) {
+            if (!empty($filters['min_age'])) 
+            {
                 $minDate = $today->modify('-' . (int)$filters['min_age'] . ' years')->format('Y-m-d');
                 $sql .= " AND u.birthdate <= :min_birthdate";
                 $params['min_birthdate'] = $minDate;
                 $today = new DateTime(); // reset
             }
     
-            if (!empty($filters['max_age'])) {
+            if (!empty($filters['max_age'])) 
+            {
                 $maxDate = $today->modify('-' . (int)$filters['max_age'] . ' years')->format('Y-m-d');
                 $sql .= " AND u.birthdate >= :max_birthdate";
                 $params['max_birthdate'] = $maxDate;
@@ -222,9 +228,11 @@ public function updateFullProfile($id, $data)
         }
     
         // Tags (interesses)
-        if (!empty($filters['tags']) && is_array($filters['tags'])) {
+        if (!empty($filters['tags']) && is_array($filters['tags'])) 
+        {
             $placeholders = [];
-            foreach ($filters['tags'] as $i => $tag) {
+            foreach ($filters['tags'] as $i => $tag) 
+            {
                 $key = ":tag$i";
                 $placeholders[] = $key;
                 $params[$key] = $tag;
@@ -247,4 +255,72 @@ public function updateFullProfile($id, $data)
     }
 
 
+    public function likeUser(int $likerId, int $likedId): bool
+    {
+        $stmt = $this->pdo->prepare("
+            INSERT INTO likes (liker_id, liked_id)
+            VALUES (:liker, :liked)
+            ON CONFLICT DO NOTHING
+        ");
+        return $stmt->execute([
+            'liker' => $likerId,
+            'liked' => $likedId
+        ]);
+    }
+
+    public function isMatch(int $userA, int $userB): bool
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT 1
+            FROM likes
+            WHERE (liker_id = :a AND liked_id = :b)
+            OR (liker_id = :b AND liked_id = :a)
+        ");
+        $stmt->execute(['a' => $userA, 'b' => $userB]);
+        return $stmt->rowCount() === 2;
+    }
+
+    public function getMatchIds(int $userId): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT l1.liked_id
+            FROM likes l1
+            JOIN likes l2 ON l1.liker_id = l2.liked_id AND l1.liked_id = l2.liker_id
+            WHERE l1.liker_id = :user_id
+        ");
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+    
+    public function getUsersByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+    
+        // Garantir que todos os IDs são inteiros (por segurança)
+        $ids = array_map('intval', $ids);
+    
+        // Criar placeholders nomeados
+        $placeholders = [];
+        $params = [];
+        foreach ($ids as $index => $id) {
+            $key = ":id$index";
+            $placeholders[] = $key;
+            $params[$key] = $id;
+        }
+    
+        $in = implode(',', $placeholders);
+    
+        $stmt = $this->pdo->prepare("
+            SELECT id, username, avatar, location
+            FROM users
+            WHERE id IN ($in)
+        ");
+        $stmt->execute($params);
+    
+        return $stmt->fetchAll();
+    }
+    
+    
 }

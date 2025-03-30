@@ -1,6 +1,5 @@
-DROP TABLE IF EXISTS users CASCADE;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS  users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -38,7 +37,9 @@ CREATE TABLE IF NOT EXISTS likes (
     id SERIAL PRIMARY KEY,
     liker_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     liked_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_like_pair UNIQUE (liker_id, liked_id),
+    CONSTRAINT no_self_like CHECK (liker_id <> liked_id)
 );
 
  
@@ -52,4 +53,13 @@ CREATE TABLE IF NOT EXISTS user_tags (
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     tag_id INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, tag_id)
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,  -- quem recebe
+    sender_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- quem envia
+    type VARCHAR(20) NOT NULL, --  'like', 'match', logo se ve.
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

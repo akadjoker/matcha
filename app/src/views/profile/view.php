@@ -2,14 +2,18 @@
 
 <section class="section">
     <div class="container">
-        <h1 class="title has-text-centered">Perfil de <?= htmlspecialchars($user['username'] ?? 'Desconhecido') ?></h1>
+        <h1 class="title has-text-centered">
+            Perfil de <?= htmlspecialchars($user['username'] ?? 'Desconhecido') ?>
+        </h1>
 
         <div class="columns is-centered">
             <div class="column is-half">
                 <div class="card">
                     <div class="card-image has-text-centered pt-4">
                         <?php
-                            $avatar = empty($user['avatar']) ? '/images/default.png' : 'uploads/' . htmlspecialchars($user['avatar']);
+                            $avatar = empty($user['avatar'])
+                                ? '/images/default.png'
+                                : 'uploads/' . htmlspecialchars($user['avatar']);
                         ?>
                         <figure class="image is-128x128 is-inline-block">
                             <img class="is-rounded" src="<?= $avatar ?>" alt="Avatar">
@@ -39,7 +43,9 @@
 
                         <hr>
 
-                        <p><strong>Biografia:</strong><br><?= nl2br(htmlspecialchars($user['bio'] ?? '')) ?></p>
+                        <p><strong>Biografia:</strong><br>
+                            <?= nl2br(htmlspecialchars($user['bio'] ?? '')) ?>
+                        </p>
 
                         <?php if (!empty($tags)) : ?>
                             <hr>
@@ -50,11 +56,35 @@
                                 <?php endforeach; ?>
                             </div>
                         <?php endif; ?>
-                    </div>
-                </div>
 
-                <div class="has-text-centered mt-4">
-                    <a href="index.php?controller=message&action=start&id=<?= (int)$user['id'] ?>" class="button is-link">💬 Enviar mensagem</a>
+
+                                <?php if ($isMatch): ?>
+                                <div class="has-text-centered mt-4">
+                                    <span class="tag is-success is-medium mb-4">
+                                        🎉 É um match!
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="buttons is-centered">
+                                <form action="index.php?controller=profile&action=like&id=<?= (int)$user['id'] ?>" method="post">
+                                    <button class="button is-small <?= $hasLiked ? 'is-danger' : 'is-link' ?>" type="submit">
+                                        <span class="icon">
+                                            <i class="fas <?= $hasLiked ? 'fa-heart-broken' : 'fa-heart' ?>"></i>
+                                        </span>
+                                        <span><?= $hasLiked ? 'Remover gosto' : 'Gostar' ?></span>
+                                    </button>
+                                </form>
+
+                                <a href="index.php?controller=message&action=start&id=<?= (int)$user['id'] ?>" class="button is-primary is-small">
+                                    <span class="icon"><i class="fas fa-comment-alt"></i></span>
+                                    <span>Enviar mensagem</span>
+                                </a>
+                            </div>
+
+                      
+
+                    </div>
                 </div>
             </div>
         </div>

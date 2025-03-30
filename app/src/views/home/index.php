@@ -13,10 +13,10 @@
                     </h2>
                     <?php if (!isset($_SESSION['user_id'])): ?>
                         <div class="buttons mt-5">
-                            <a href="index.php?controller=auth&action=showRegister" class="button is-primary is-inverted is-large">
+                            <a href="index.php?controller=auth&action=register" class="button is-primary is-inverted is-large">
                                 <strong>Começar Agora</strong>
                             </a>
-                            <a href="index.php?controller=auth&action=showLogin" class="button is-link is-light is-large">
+                            <a href="index.php?controller=auth&action=login" class="button is-link is-light is-large">
                                 Já tenho conta
                             </a>
                         </div>
