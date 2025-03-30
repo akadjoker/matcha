@@ -24,10 +24,17 @@ RUN wget https://github.com/mailhog/mhsendmail/releases/download/v0.2.0/mhsendma
     && mv mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
 
 
-RUN a2enmod rewrite
-RUN chmod -R 777 /var/www/html/public && mkdir -p /var/www/html/public/uploads \
-    && chmod -R 777 /var/www/html/public/uploads
+COPY ./apache/apache.conf /etc/apache2/sites-available/000-default.conf
 
+
+RUN a2enmod rewrite
+
+ 
+
+RUN mkdir -p /var/www/html/public/uploads \
+    && chmod -R 777 /var/www/html \
+    && chmod -R 777 /var/www/html/public \
+    && chmod -R 777 /var/www/html/public/uploads
 
 WORKDIR /var/www/html
 

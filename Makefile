@@ -9,6 +9,10 @@ init:
 
 setup: build init
 
+shell:
+	docker exec -it matcha_web bash
+
+
 up:
 	docker-compose up
 

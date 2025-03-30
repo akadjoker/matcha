@@ -3,7 +3,7 @@
 services:
   web:
     build:
-      context: ./docker/php
+      context: ./docker
       dockerfile: Dockerfile
     container_name: matcha_web
     ports:

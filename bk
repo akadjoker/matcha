@@ -1,0 +1,22 @@
+ <div class="navbar-end">
+            <?php if (!empty($_SESSION['user_id'])): ?>
+                <?php
+                    $avatar = !empty($_SESSION['avatar']) ? 'uploads/' . $_SESSION['avatar'] : 'images/default.png';
+                ?>
+
+                <!-- <div class="navbar-item">
+                    <span class="has-text-grey-light mr-2">Olá,  <?= htmlspecialchars($_SESSION['username']) ?></span>
+                    <a class="navbar-link">
+                        <img src="<?= $avatar ?>" alt="Avatar" class="avatar-small">
+                        <!-- <?= htmlspecialchars($user['username']) ?> -->
+                    </a>
+                    <a class="button is-light" href="index.php?controller=auth&action=logout">Logout</a>
+                </div> -->
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <!-- <div class="navbar-dropdown is-right">
+                        <a href="index.php?controller=profile&action=index" class="navbar-item">Meu Perfil</a>
+                        <a href="index.php?controller=auth&action=logout" class="navbar-item">Logout</a>
+                    </div> -->
+                </div>
+            <?php endif; ?>
+        </div>
